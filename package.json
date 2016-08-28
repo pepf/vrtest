@@ -1,0 +1,27 @@
+{
+  "name": "vrtest",
+  "version": "1.0.0",
+  "description": "VR test thing",
+  "main": "src/app/index.js",
+  "scripts": {
+    "webpack": "webpack",
+    "dev": "webpack-dev-server ."
+  },
+  "keywords": [
+    "vr"
+  ],
+  "author": "Pepijn Fens",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.0"
+  },
+  "dependencies": {
+    "three": "^0.80.1",
+    "webvr-boilerplate": "^0.4.6",
+    "webvr-polyfill": "^0.9.18"
+  }
+}
