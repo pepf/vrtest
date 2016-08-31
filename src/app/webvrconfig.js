@@ -22,7 +22,7 @@ export default {
   // Scales the recommended buffer size reported by WebVR, which can improve
   // performance. Making this very small can lower the effective resolution of
   // your scene.
-  BUFFER_SCALE: 0.33, // default: 1.0
+  BUFFER_SCALE: 1.0, // default: 1.0
   // Allow VRDisplay.submitFrame to change gl bindings, which is more
   // efficient if the application code will re-bind it's resources on the
   // next frame anyway.
