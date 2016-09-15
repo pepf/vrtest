@@ -12,7 +12,12 @@ import App from './app.js'
 // window.WebVRConfig = WebVRConfig;
 // window.WebVRManager = WebVRManager;
 // window.THREE = THREE;
-let app = new App();
+
+
+const options = {
+  bgColor: 0x111111
+};
+let app = new App(options);
 
 // let init = () => {
 //

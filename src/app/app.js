@@ -9,11 +9,15 @@ import roadModel from './models/road.json'
 export default class App extends Boilerplate {
 
   constructor (options) {
+
     super(options);
   }
 
   setup() {
     super.setup();
+
+    this.scene.fog = new THREE.FogExp2( this.options.bgColor, 0.2 );
+
     this.objectRefs = {};
 
     let light = new THREE.PointLight( 0xffffff, 1, 0 );

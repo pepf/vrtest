@@ -7,14 +7,18 @@ import WebVRManager from 'webvr-boilerplate'
  */
 export default class Boilerplate {
   constructor(options) {
-    this.init();
+
+    this.init(options);
   }
 
-  init() {
+  init(options) {
+    this.options = options || {};
+    this.options.bgColor = (this.options.bgColor) || 0x000000;
     // Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
     // Only enable it if you actually need to.
     this.renderer = new THREE.WebGLRenderer({antialias: true});
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setClearColor( this.options.bgColor, 1 );
 
     // Append the canvas element created by the renderer to document body element.
     document.body.appendChild(this.renderer.domElement);
