@@ -29,6 +29,9 @@ module.exports = {
                 comments: false,
             },
         }),
+        new webpack.ProvidePlugin({
+          THREE: "three"
+        })
     ],
     devtool: "#eval",
     devServer: {

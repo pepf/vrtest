@@ -9,8 +9,6 @@
  *
  */
 
-import THREE from './vrcontrols';
-
 THREE.VREffect = function ( renderer, onError ) {
 
 	var vrHMD;

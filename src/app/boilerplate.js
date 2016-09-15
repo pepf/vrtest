@@ -1,4 +1,6 @@
-import THREE from './vreffect.js'
+import THREEEffect from './vreffect.js'
+import THREEControls from './vrcontrols.js'
+
 import WebVRManager from 'webvr-boilerplate'
 
 /**
