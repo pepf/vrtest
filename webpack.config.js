@@ -9,11 +9,16 @@ module.exports = {
         filename: 'bundle.js',
     },
     module: {
-        loaders: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader',
-        }]
+      loaders: [{
+          test: /\.jsx?$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+        },
+        {
+          test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.json$|\.mp3$/,
+          loader: "file"
+        }
+      ],
     },
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
@@ -25,7 +30,7 @@ module.exports = {
             },
         }),
     ],
-    devtool: "#inline-source-map",
+    devtool: "#eval",
     devServer: {
       host: 'Pepijns-MacBook-Pro.local',
       port: 8080,
