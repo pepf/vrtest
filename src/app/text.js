@@ -15,6 +15,7 @@ export default class Text {
      */
     this.options = options;
     this.textVal = this.options.text || "N/A";
+    this.material = this.options.material || null;
     this.wrapper = new THREE.Object3D();
     this.wrapper.position.copy(this.options.position || new THREE.Vector3(0,0,0) );
 
@@ -37,7 +38,7 @@ export default class Text {
 
   generateText() {
     let material;
-    if(!this.options.material && !this.material) {
+    if(!this.material) {
       this.material = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         shading: THREE.FlatShading

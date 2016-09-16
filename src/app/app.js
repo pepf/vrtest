@@ -2,8 +2,8 @@ import Boilerplate from './boilerplate.js'
 import THREE from './vreffect.js'
 import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
-import Widget from './widget.js'
 import TagCloudWidget from './tagcloud'
+import PRWidget from './widgets/pr.js'
 import Utils from './utils.js'
 import { wait } from './utils.js'
 import PTSans from './assets/PTSans_Regular.json'
@@ -138,9 +138,17 @@ export default class App extends Boilerplate {
       } );
     });
 
-    this.widget1 = await this.createWidget();
+    this.widget1 = new TagCloudWidget({
+      font: this.mainFont
+    })
     this.widget1.object.position.set(1000, 1000, 1000);
     this.scene.add(this.widget1.object);
+
+    this.widget2 = new PRWidget({
+      font: this.mainFont
+    })
+    this.widget2.object.position.set(1000, 1000, 1000);
+    this.scene.add(this.widget2.object);
   }
 
   async start() {
@@ -175,13 +183,4 @@ export default class App extends Boilerplate {
     });
   }
 
-  createWidget() {
-    // const geometry = new THREE.PlaneGeometry( 5, 20, 32 );
-    // const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-    // const plane = new THREE.Mesh( geometry, material );
-    let widget = (new TagCloudWidget({
-      font: this.mainFont
-    }));
-    return widget;
-  }
 }
