@@ -46,21 +46,62 @@ export default class App extends Boilerplate {
     this.scene.add( gridHelper );
 
     this.loadObjects().then(_ => this.start());
+
+    this.timer = 0;
   }
 
   loop( delta ) {
 
+    this.timer += delta;
+
+    let x;
     switch (this.state) {
-      case 'START':
-        this.coostoObject.position.z += (-2 - this.coostoObject.position.z) * 0.2;
+      case 'START': {
+        x = this.timer / 2000;
+
+        if (x > 1) {
+          x = 1;
+          this.timer = 0;
+          this.state = 'REMOVE_LOGO';
+        }
+
+        const from = -20,
+              to = -2;
+
+        this.coostoObject.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1);
         break;
-      case 'REMOVE_LOGO':
-        this.coostoObject.opacity -= 0.01;
-        this.coostoObject.position.y += (100 - this.coostoObject.position.y) * 0.008;
+      }
+      case 'REMOVE_LOGO': {
+        x = this.timer / 500;
+
+        if (x > 1) {
+          x = 1;
+          this.timer = 0;
+          this.state = 'SHOW_WIDGET_1';
+        }
+
+        this.coostoObject.children[0].material.opacity = 1 - x;
+        this.coostoObject.children[1].material.opacity = 0.75 * (1 - x);
         break;
-      case 'SHOW_WIDGET_1':
-        this.widget1.position.set(0,1.75,-2);
+      }
+      case 'SHOW_WIDGET_1': {
+        x = this.timer / 500;
+
+        if (x > 1) {
+          x = 1;
+          this.timer = 0;
+          this.state = 'SHOW_WIDGET_2';
+        }
+
+        const from = -20,
+              to = -2;
+
+        this.widget1.position.x = 0;
+        this.widget1.position.y = 1.75;
+        this.widget1.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1)
+
         break;
+      }
     }
 
   }
@@ -81,15 +122,6 @@ export default class App extends Boilerplate {
 
   async start() {
     this.state = 'START';
-    await wait(1.8);
-    this.state = 'REMOVE_LOGO';
-    await wait(0.5);
-    this.state = 'SHOW_WIDGET_1';
-    await wait(0.2);
-    this.state = 'SHOW_WIDGET_2';
-    await wait(0.2);
-    this.state = 'SHOW_WIDGET_3';
-
   }
 
   createCoostoLogo () {
@@ -99,10 +131,14 @@ export default class App extends Boilerplate {
       mtlLoader.load(
         coostoMaterial,
         ( materials ) => {
-
           let objLoader = new THREE.OBJLoader();
           objLoader.setMaterials( materials );
           materials.preload();
+
+          // Force material to be transparent
+          for (const materialName in materials.materials) {
+            materials.materials[materialName].transparent = true;
+          }
 
           // load a resource from a file
           objLoader.load(
