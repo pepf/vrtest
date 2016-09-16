@@ -37,6 +37,9 @@ export default class App extends Boilerplate {
     let directional = new THREE.DirectionalLight( 0xffffff, 1.2 );
     directional.position.set(0,1,1).normalize(); //45 degrees;
     this.scene.add(directional);
+    let directional2 = new THREE.DirectionalLight( 0xffffff, 1.2 );
+    directional2.position.set(-1,1,-1).normalize(); //45 degrees;
+    this.scene.add(directional2);
 
 
     let hemiLight = new THREE.HemisphereLight( 0xd0d5e8, 0xc2b280, 1.2 );
@@ -96,7 +99,7 @@ export default class App extends Boilerplate {
         }
 
         const from = -20,
-              to = -2;
+              to = -4;
 
         this.widget1.object.position.x = 0;
         this.widget1.object.position.y = 1.75;
@@ -114,6 +117,23 @@ export default class App extends Boilerplate {
         }
 
         this.widget1Start = true;
+        break;
+      }
+      case 'SHOW_WIDGET_2': {
+        x = this.timer / 1000;
+
+        if (x > 1) {
+          x = 1;
+          this.timer = 0;
+          this.state = 'SHOW_WIDGET_3';
+        }
+
+        const from = -20,
+              to = -2;
+
+        this.widget2.object.position.x = from + (to - from) * THREE.Math.smoothstep(x, 0, 1);
+        this.widget2.object.position.y = 1.75;
+        this.widget2.object.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1)
         break;
       }
     }
@@ -148,6 +168,7 @@ export default class App extends Boilerplate {
       font: this.mainFont
     })
     this.widget2.object.position.set(1000, 1000, 1000);
+    this.widget2.object.rotation.y = Math.PI * 0.25;
     this.scene.add(this.widget2.object);
   }
 
