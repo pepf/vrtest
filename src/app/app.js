@@ -3,6 +3,7 @@ import THREE from './vreffect.js'
 import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
 import Utils from './utils.js'
+import Widget from './widget.js'
 
 // import roadModel from './models/road.json'
 import roadModel from './models/road.json'
@@ -78,6 +79,8 @@ export default class App extends Boilerplate {
         object.rotation.set(0, 0.5*Math.PI, 0)
     	}
     );
+
+    let widget = new Widget({scene:this.scene});
 
     this.createCoostoLogo();
 
