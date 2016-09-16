@@ -15,7 +15,8 @@ export default class Widget {
     let material = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       wireframe: true,
-      wireframeLinewidth: 1
+      wireframeLinewidth: 1,
+      visible: false
     });
     let boundingBox = new THREE.Mesh(geo, material);
          boundingBox.name = "BoundingBox";
@@ -25,11 +26,13 @@ export default class Widget {
   // what happens when hovering
   setHover() {
     console.log("hovered!")
+    this.wrapper.material.visible = true
   }
 
   // Opposite of setHover
   setBlur() {
     console.log("hovered out!")
+    this.wrapper.material.visible = false
 
   }
 

@@ -1,9 +1,10 @@
 import Text from './text.js'
+import Widget from 'widgets/widget.js'
 
-export default class TagCloudWidget {
+export default class TagCloudWidget extends Widget {
 
   constructor(options) {
-    this.object = new THREE.Object3D();
+    super(options);
 
     this.data = {
       'europe': { size: 56, position: new THREE.Vector3(0,0,0) },
@@ -74,10 +75,14 @@ export default class TagCloudWidget {
 
       this.data[word].widget.object.position.z = 100;
 
-      this.object.add(this.data[word].widget.object);
+      this.wrapper.add(this.data[word].widget.object);
     }
 
     this.clock = 0;
+  }
+
+  get object() {
+    return this.wrapper;
   }
 
   transition(delta) {

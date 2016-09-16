@@ -159,12 +159,12 @@ export default class App extends Boilerplate {
           this.state = 'SHOW_WIDGET_3';
         }
 
-        const from = -20,
-              to = -2;
+        const from = new THREE.Vector3(-20, 1.75, -10),
+              to = new THREE.Vector3(-2, 1.75, -1),
+              alpha = THREE.Math.smoothstep(x, 0, 1);
 
-        this.widget2.object.position.x = from + (to - from) * THREE.Math.smoothstep(x, 0, 1);
-        this.widget2.object.position.y = 1.75;
-        this.widget2.object.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1)
+        this.widget2.object.position.lerpVectors(from, to, alpha);
+        this.widget2.object.lookAt(this.camera.position);
         break;
       }
     }

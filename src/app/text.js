@@ -50,7 +50,7 @@ export default class Text {
           font: this.options.font,
           size: this.options.size || 1,
           height: this.options.height || 0.5,
-          curveSegments: 4,
+          curveSegments: 2,
           bevelEnabled: false,
           material: 0,
           extrudeMaterial: 1
