@@ -60,10 +60,7 @@ export default class App extends Boilerplate {
     this.timer = 0;
   }
 
-  loop( delta ) {
-
-    this.timer += delta;
-
+  updateHover() {
     this.selector.raycaster.setFromCamera( new THREE.Vector2(0, 0), this.camera );
 
     var previousHover = this.hover;
@@ -89,6 +86,23 @@ export default class App extends Boilerplate {
         this.hover.setHover();
       }
     }
+  }
+
+  loop( delta ) {
+
+    this.timer += delta;
+
+    // Reset by looking down
+    var cameraVector = (new THREE.Vector3( 0, 0, -1 )).applyQuaternion(this.camera.quaternion);
+
+    if (cameraVector.angleTo(new THREE.Vector3( 0, -1, 0 )) < 0.1) {
+      this.resetObjects();
+      this.state = 'START';
+      this.timer = 0;
+    }
+    else {
+      this.updateHover();
+    }
 
     let x;
     switch (this.state) {
@@ -108,7 +122,7 @@ export default class App extends Boilerplate {
         break;
       }
       case 'REMOVE_LOGO': {
-        x = this.timer / 500;
+        x = this.timer / 1000;
 
         if (x > 1) {
           x = 1;
@@ -116,8 +130,11 @@ export default class App extends Boilerplate {
           this.state = 'SHOW_WIDGET_1';
         }
 
-        this.coostoObject.children[0].material.opacity = 1 - x;
-        this.coostoObject.children[1].material.opacity = 0.75 * (1 - x);
+        let opacity = Math.min(1, 2 - x * 2);
+        let scale = Math.max(1, x * 2);
+
+        this.coostoObject.children[0].material.opacity = opacity;
+        this.coostoObject.children[1].material.opacity = 0.75 * opacity;
         break;
       }
       case 'SHOW_WIDGET_1': {
@@ -178,10 +195,6 @@ export default class App extends Boilerplate {
 
     this.scene.add(this.coostoObject);
 
-    this.coostoObject.position.set(0,1.75,-2000)
-    this.coostoObject.rotation.set(0.5*Math.PI, 0, 0)
-    this.coostoObject.scale.set(0.2,0.2,0.2)
-
     this.mainFont = await new Promise(resolve => {
       var loader = new THREE.FontLoader();
       loader.load( PTSans, ( response ) => {
@@ -192,18 +205,32 @@ export default class App extends Boilerplate {
     this.widget1 = new TagCloudWidget({
       font: this.mainFont
     })
-    this.widget1.object.position.set(1000, 1000, 1000);
     this.scene.add(this.widget1.object);
     this.intersectables.push(this.widget1.object)
-
 
     this.widget2 = new PRWidget({
       font: this.mainFont
     })
+    this.scene.add(this.widget2.object);
+    this.intersectables.push(this.widget2.object);
+
+    this.resetObjects();
+  }
+
+  resetObjects() {
+    this.coostoObject.position.set(0,1.75,-2000)
+    this.coostoObject.rotation.set(0.5*Math.PI, 0, 0)
+    this.coostoObject.scale.set(0.2,0.2,0.2)
+    this.coostoObject.children[0].material.opacity = 1;
+    this.coostoObject.children[1].material.opacity = 0.75;
+
+    this.widget1.object.position.set(1000, 1000, 1000);
+
     this.widget2.object.position.set(1000, 1000, 1000);
     this.widget2.object.rotation.y = Math.PI * 0.25;
-    this.scene.add(this.widget2.object);
-    this.intersectables.push(this.widget2.object)
+
+    this.widget1.reset();
+    this.widget1Start = false;
   }
 
   async start() {

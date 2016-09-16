@@ -85,6 +85,13 @@ export default class TagCloudWidget extends Widget {
     return this.wrapper;
   }
 
+  reset() {
+    this.clock = 0;
+    for (const word in this.data) {
+      this.data[word].widget.object.position.z = -1000;
+    }
+  }
+
   transition(delta) {
     this.clock += delta;
     var i = 0;
