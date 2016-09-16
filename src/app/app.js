@@ -24,6 +24,9 @@ export default class App extends Boilerplate {
   setup() {
     super.setup();
 
+    //things that we actually want to be able to intersect with
+    this.intersectables = [];
+
     this.reference = new THREE.Object3D;
     this.reference.add(this.camera);
 
@@ -50,6 +53,8 @@ export default class App extends Boilerplate {
     gridHelper.rotation.x = Math.PI;
     this.scene.add( gridHelper );
 
+    this.createSelector();
+
     this.loadObjects().then(_ => this.start());
 
     this.timer = 0;
@@ -58,6 +63,32 @@ export default class App extends Boilerplate {
   loop( delta ) {
 
     this.timer += delta;
+
+    this.selector.raycaster.setFromCamera( new THREE.Vector2(0, 0), this.camera );
+
+    var previousHover = this.hover;
+
+    this.hover = null;
+    var intersects = this.selector.raycaster.intersectObjects(this.intersectables, false);
+    if (intersects.length > 0) {
+      intersects.forEach( obj => {
+        obj = obj.object;
+
+        if(obj.name === "BoundingBox") {
+          this.hover = obj.widget;
+        }
+
+      })
+    }
+
+    if (this.hover !== previousHover) {
+      if (previousHover) {
+        previousHover.setBlur();
+      }
+      if (this.hover) {
+        this.hover.setHover();
+      }
+    }
 
     let x;
     switch (this.state) {
@@ -163,6 +194,8 @@ export default class App extends Boilerplate {
     })
     this.widget1.object.position.set(1000, 1000, 1000);
     this.scene.add(this.widget1.object);
+    this.intersectables.push(this.widget1.object)
+
 
     this.widget2 = new PRWidget({
       font: this.mainFont
@@ -170,10 +203,29 @@ export default class App extends Boilerplate {
     this.widget2.object.position.set(1000, 1000, 1000);
     this.widget2.object.rotation.y = Math.PI * 0.25;
     this.scene.add(this.widget2.object);
+    this.intersectables.push(this.widget2.object)
   }
 
   async start() {
     this.state = 'START';
+  }
+
+  createSelector() {
+    let geometry = new THREE.RingGeometry( 0.8, 1.0, 32 );
+    let material = new THREE.MeshBasicMaterial( {
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+    let selector = new THREE.Mesh(geometry, material);
+    selector.position.set( 0, 0, -1.5);
+    // selector.position.setZ(-0.2);
+    var SCALE = 0.1
+    selector.scale.set( SCALE, SCALE, SCALE );
+    selector.raycaster = new THREE.Raycaster();
+    this.camera.add(selector);
+    // this.scene.add(selector);
+    this.selector = selector;
   }
 
   createCoostoLogo () {

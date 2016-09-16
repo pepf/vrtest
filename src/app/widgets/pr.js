@@ -7,7 +7,7 @@ export default class PRWidget extends Widget {
   constructor(options) {
     super(options);
 
-    let wrapper = new THREE.Object3D();
+    let wrapper = this.wrapper;
 
     let textOptions = {
       text: "",
@@ -32,7 +32,6 @@ export default class PRWidget extends Widget {
     }
     let widgetLabel = new Text(labelOptions)
     wrapper.add(widgetLabel.object);
-    this.wrapper = wrapper;
 
     // Initialize realtime data flow
     setInterval(()=> {
