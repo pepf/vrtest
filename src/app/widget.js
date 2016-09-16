@@ -10,9 +10,10 @@ export default class Widget {
       position: new THREE.Vector3(0,1,-2),
       size: 0.5,
       height: 0.2,
-      parent: options.scene
+      // parent: options.scene
     }
     let widgetText = new Text(textOptions)
+    this.object = widgetText.wrapper;
 
     // Initialize realtime data flow
     setInterval(()=> {

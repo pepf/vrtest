@@ -36,9 +36,8 @@ export default class Text {
 
     this.wrapper.add(textObject);
 
-    if(!this.options.parent) {
-      throw new Error("it should have a parent to add to")
-    } else {
+    if(this.options.parent) {
+      // throw new Error("it should have a parent to add to")
       this.options.parent.add(this.wrapper);
     }
   }
