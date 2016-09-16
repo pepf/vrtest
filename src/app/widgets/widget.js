@@ -18,6 +18,10 @@ export default class Widget {
       wireframeLinewidth: 1,
       visible: false
     });
+    this.scale = 1;
+    this.scaleFrom = 1;
+    this.scaleTo = 1;
+    this.timer = 0;
     let boundingBox = new THREE.Mesh(geo, material);
          boundingBox.name = "BoundingBox";
     return boundingBox;
@@ -26,14 +30,27 @@ export default class Widget {
   // what happens when hovering
   setHover() {
     console.log("hovered!")
-    this.wrapper.material.visible = true
+    this.timer = 0;
+    this.scaleFrom = this.scale;
+    this.scaleTo = 1.5;
+    //this.wrapper.material.visible = true
   }
 
   // Opposite of setHover
   setBlur() {
     console.log("hovered out!")
-    this.wrapper.material.visible = false
+    this.timer = 0;
+    this.scaleFrom = this.scale;
+    this.scaleTo = 1;
+    //this.wrapper.material.visible = false
 
+  }
+
+  update(delta) {
+    this.timer += delta;
+    const x = this.timer / 500;
+    this.scale = this.scaleFrom + (this.scaleTo - this.scaleFrom) * Math.min(x * x, 1);
+    this.wrapper.scale.set(this.scale, this.scale, this.scale);
   }
 
   // returns the actual widget wraper object, so that we can use it somewhere else

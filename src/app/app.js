@@ -4,6 +4,7 @@ import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
 import TagCloudWidget from './tagcloud'
 import PRWidget from './widgets/pr.js'
+import LineWidget from './widgets/line.js'
 import Utils from './utils.js'
 import { wait } from './utils.js'
 import PTSans from './assets/PTSans_Regular.json'
@@ -146,12 +147,12 @@ export default class App extends Boilerplate {
           this.state = 'TAGCLOUD_ANIMATION';
         }
 
-        const from = -20,
-              to = -4;
+        const from = new THREE.Vector3(20, 1.75, -10),
+              to = new THREE.Vector3(3, 1.75, -3),
+              alpha = THREE.Math.smoothstep(x, 0, 1);
 
-        this.widget1.object.position.x = 0;
-        this.widget1.object.position.y = 1.75;
-        this.widget1.object.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1)
+        this.widget1.object.position.lerpVectors(from, to, alpha);
+        this.widget1.object.lookAt(this.camera.position);
 
         break;
       }
@@ -177,16 +178,37 @@ export default class App extends Boilerplate {
         }
 
         const from = new THREE.Vector3(-20, 1.75, -10),
-              to = new THREE.Vector3(-2, 1.75, -1),
+              to = new THREE.Vector3(-3, 1.75, -3),
               alpha = THREE.Math.smoothstep(x, 0, 1);
 
         this.widget2.object.position.lerpVectors(from, to, alpha);
         this.widget2.object.lookAt(this.camera.position);
         break;
       }
+      case 'SHOW_WIDGET_3': {
+        x = this.timer / 1000;
+
+        if (x > 1) {
+          x = 1;
+          this.timer = 0;
+          this.state = 'END';
+        }
+
+        const from = new THREE.Vector3(-20, 1.75, 10),
+              to = new THREE.Vector3(0, 1.75, 5),
+              alpha = THREE.Math.smoothstep(x, 0, 1);
+
+        this.widget3.object.position.lerpVectors(from, to, alpha);
+        this.widget3.object.lookAt(this.camera.position);
+        break;
+      }
     }
 
     if (this.widget1Start) this.widget1.transition(delta);
+
+    if (this.widget1) this.widget1.update(delta);
+    if (this.widget2) this.widget2.update(delta);
+    if (this.widget3) this.widget3.update(delta);
 
   }
 
@@ -214,6 +236,12 @@ export default class App extends Boilerplate {
     this.scene.add(this.widget2.object);
     this.intersectables.push(this.widget2.object);
 
+    this.widget3 = new LineWidget({
+      font: this.mainFont
+    })
+    this.scene.add(this.widget3.object);
+    //this.intersectables.push(this.widget3.object);
+
     this.resetObjects();
   }
 
@@ -227,7 +255,8 @@ export default class App extends Boilerplate {
     this.widget1.object.position.set(1000, 1000, 1000);
 
     this.widget2.object.position.set(1000, 1000, 1000);
-    this.widget2.object.rotation.y = Math.PI * 0.25;
+
+    this.widget3.object.position.set(1000, 1000, 1000);
 
     this.widget1.reset();
     this.widget1Start = false;
