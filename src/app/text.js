@@ -98,6 +98,10 @@ export default class Text {
     return
   }
 
+  get object() {
+    return this.wrapper;
+  }
+
 
 
 }
