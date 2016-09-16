@@ -3,6 +3,7 @@ import THREE from './vreffect.js'
 import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
 import Utils from './utils.js'
+import { wait } from './utils.js'
 
 // import roadModel from './models/road.json'
 import roadModel from './models/road.json'
@@ -20,9 +21,12 @@ export default class App extends Boilerplate {
   setup() {
     super.setup();
 
-    this.scene.fog = new THREE.FogExp2( this.options.bgColor, 0.2 );
+    this.reference = new THREE.Object3D;
+    this.reference.add(this.camera);
 
-    this.objectRefs = {};
+    this.scene.add(this.reference);
+
+    this.scene.fog = new THREE.FogExp2( this.options.bgColor, 0.2 );
 
     /**
      * Lightning setup
@@ -33,121 +37,89 @@ export default class App extends Boilerplate {
 
 
     let hemiLight = new THREE.HemisphereLight( 0xd0d5e8, 0xc2b280, 1.2 );
-      hemiLight.position.set( 0, 500, 0 );
-      this.scene.add(hemiLight);
-
-
-    let wrapper = new THREE.Object3D();
-    wrapper.position.set(0,0,0);
-    this.scene.add(wrapper);
-    this.objectRefs.wrapper = wrapper;
-
-    let material = new THREE.MeshStandardMaterial({
-      color: '#21ce2b',
-      shading: THREE.FlatShading
-    });
-    this.material=material;
-
-    let roadMaterial = new THREE.MeshStandardMaterial({
-      color: '#422E18',
-      shading: THREE.FlatShading
-    })
-
-    this.createRandomIcosahedron(wrapper);
-    this.createRandomIcosahedron(wrapper);
-    this.createRandomIcosahedron(wrapper);
-    this.createRandomIcosahedron(wrapper);
-    this.createRandomIcosahedron(wrapper);
-    this.createRandomIcosahedron(wrapper);
-    this.createRandomIcosahedron(wrapper);
-
-
-    // Show loaded JSON object
-    var loader = new THREE.JSONLoader()
-
-    // load a resource from a file
-    loader.load(
-    	// resource URL
-    	roadModel,
-    	// Function when resource is loaded
-      ( geometry, materials ) => {
-    		let object = new THREE.Mesh( geometry, roadMaterial );
-        // console.log(object)
-    		this.scene.add( object );
-        object.position.set(-2,0,0)
-        object.rotation.set(0, 0.5*Math.PI, 0)
-    	}
-    );
-
-    this.createCoostoLogo();
+    hemiLight.position.set( 0, 500, 0 );
+    this.scene.add(hemiLight);
 
     let gridHelper = new THREE.GridHelper( 10, 10);
     gridHelper.rotation.x = Math.PI;
-    wrapper.add( gridHelper );
+    this.scene.add( gridHelper );
+
+    this.loadObjects().then(_ => this.start());
   }
 
   loop( delta ) {
 
-    for (let key in this.objectRefs) {
-      let obj = this.objectRefs[key]
-      if(typeof obj.integrate === "function") {
-        obj.integrate(delta);
-      }
-      if(key === "coosto") {
-        obj.t+=delta;
-        obj.position.set(0,1.75,-2 + Math.sin(obj.t*0.0001) );
-      }
+    switch (this.state) {
+      case 'START':
+        this.coostoObject.position.z += (-2 - this.coostoObject.position.z) * 0.2;
+        break;
+      case 'REMOVE_LOGO':
+        this.coostoObject.opacity -= 0.01;
+        this.coostoObject.position.y += (100 - this.coostoObject.position.y) * 0.008;
+        break;
+      case 'SHOW_WIDGET_1':
+        this.widget1.position.set(0,1.75,-2);
+        break;
     }
-
-    this.scene.position.add(new THREE.Vector3(0,0,0.0003));
-
 
   }
 
-  createRandomIcosahedron (container) {
-    let ico = new Icosahedron({
-      size: Utils.random(0.1,0.4),
-      position: [Utils.random(-1.5,1.5), this.controls.userHeight+Utils.random(-1,1), Utils.random(0,-3)],
-      speed: new THREE.Vector3(0,0,0.0),
-      rotspeed: new THREE.Vector3(Utils.random(-0.0005,0.0005),0, Utils.random(-0.0003,0.0003)),
-      material: this.material
-    });
+  async loadObjects() {
+    this.coostoObject = await this.createCoostoLogo();
 
-    this.objectRefs["ico" + Math.random()] = ico;
-    container.add(ico.cube);
+    this.scene.add(this.coostoObject);
 
+    this.coostoObject.position.set(0,1.75,-2000)
+    this.coostoObject.rotation.set(0.5*Math.PI, 0, 0)
+    this.coostoObject.scale.set(0.2,0.2,0.2)
+
+    this.widget1 = await this.createWidget();
+    this.widget1.position.set(1000, 1000, 1000);
+    this.scene.add(this.widget1);
+  }
+
+  async start() {
+    this.state = 'START';
+    await wait(1.8);
+    this.state = 'REMOVE_LOGO';
+    await wait(0.5);
+    this.state = 'SHOW_WIDGET_1';
+    await wait(0.2);
+    this.state = 'SHOW_WIDGET_2';
+    await wait(0.2);
+    this.state = 'SHOW_WIDGET_3';
 
   }
 
   createCoostoLogo () {
-    const mtlLoader = new THREE.MTLLoader()
+    return new Promise((resolve, reject) => {
+      const mtlLoader = new THREE.MTLLoader()
 
-    let objectRefs = this.objectRefs;
+      mtlLoader.load(
+        coostoMaterial,
+        ( materials ) => {
 
-    mtlLoader.load(
-      coostoMaterial,
-      ( materials ) => {
+          let objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials );
+          materials.preload();
 
-        let objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials( materials );
-        materials.preload();
+          // load a resource from a file
+          objLoader.load(
+            // resource URL
+            coostoLogo,
+            // Function when resource is loaded
+            resolve
+          );
+        }
+      )
+    });
+  }
 
-        // load a resource from a file
-        objLoader.load(
-          // resource URL
-          coostoLogo,
-          // Function when resource is loaded
-          ( object ) => {
+  createWidget() {
+    const geometry = new THREE.PlaneGeometry( 5, 20, 32 );
+    const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+    const plane = new THREE.Mesh( geometry, material );
 
-            this.scene.add( object );
-            object.t = 0;
-            object.position.set(0,1.75,-2)
-            object.rotation.set(0.5*Math.PI, 0, 0)
-            object.scale.set(0.2,0.2,0.2)
-            objectRefs["coosto"] = object;
-          }
-        );
-      }
-    )
+    return plane;
   }
 }
