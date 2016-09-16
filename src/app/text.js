@@ -1,5 +1,4 @@
 import THREE from './vreffect.js'
-import PTSans from './assets/PTSans_Regular.json'
 
 export default class Text {
 
@@ -19,16 +18,10 @@ export default class Text {
     this.wrapper = new THREE.Object3D();
     this.wrapper.position.copy(this.options.position || new THREE.Vector3(0,0,0) );
 
-    this.loadFont(this.createText);
+    this.createText();
   }
 
-  loadFont (onComplete) {
-    var loader = new THREE.FontLoader();
-    loader.load( PTSans, ( response ) => {
-      this.font = response;
-      onComplete.call(this);
-    } );
-  }
+
 
   createText() {
 
@@ -43,10 +36,6 @@ export default class Text {
   }
 
   generateText() {
-    //font not loaded yet, async is a bitch
-    if(!this.font) {
-      return;
-    }
     let material;
     if(!this.options.material && !this.material) {
       this.material = new THREE.MeshStandardMaterial({
@@ -57,7 +46,7 @@ export default class Text {
 
     let textGeo = new THREE.TextGeometry( this.text, {
 
-          font: this.font,
+          font: this.options.font,
           size: this.options.size || 1,
           height: this.options.height || 0.5,
           curveSegments: 4,

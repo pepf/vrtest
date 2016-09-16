@@ -11,6 +11,7 @@ export default class Widget {
       position: new THREE.Vector3(0,0,0),
       size: 0.5,
       height: 0.2,
+      font: options.font
       // parent: options.scene
     }
     let widgetText = new Text(textOptions)
@@ -21,6 +22,7 @@ export default class Widget {
       position: new THREE.Vector3(0,0.5,0),
       size: 0.2,
       height: 0.2,
+      font: options.font
       // parent: options.scene
     }
     let widgetLabel = new Text(labelOptions)

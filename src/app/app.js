@@ -3,8 +3,10 @@ import THREE from './vreffect.js'
 import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
 import Widget from './widget.js'
+import TagCloudWidget from './tagcloud'
 import Utils from './utils.js'
 import { wait } from './utils.js'
+import PTSans from './assets/PTSans_Regular.json'
 
 // import roadModel from './models/road.json'
 import roadModel from './models/road.json'
@@ -90,19 +92,33 @@ export default class App extends Boilerplate {
         if (x > 1) {
           x = 1;
           this.timer = 0;
-          this.state = 'SHOW_WIDGET_2';
+          this.state = 'TAGCLOUD_ANIMATION';
         }
 
         const from = -20,
               to = -2;
 
-        this.widget1.position.x = 0;
-        this.widget1.position.y = 1.75;
-        this.widget1.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1)
+        this.widget1.object.position.x = 0;
+        this.widget1.object.position.y = 1.75;
+        this.widget1.object.position.z = from + (to - from) * THREE.Math.smoothstep(x, 0, 1)
 
         break;
       }
+      case 'TAGCLOUD_ANIMATION': {
+        x = this.timer / 1000;
+
+        if (x > 1) {
+          x = 1;
+          this.timer = 0;
+          this.state = 'SHOW_WIDGET_2';
+        }
+
+        this.widget1Start = true;
+        break;
+      }
     }
+
+    if (this.widget1Start) this.widget1.transition(delta);
 
   }
 
@@ -115,9 +131,16 @@ export default class App extends Boilerplate {
     this.coostoObject.rotation.set(0.5*Math.PI, 0, 0)
     this.coostoObject.scale.set(0.2,0.2,0.2)
 
+    this.mainFont = await new Promise(resolve => {
+      var loader = new THREE.FontLoader();
+      loader.load( PTSans, ( response ) => {
+        resolve(response);
+      } );
+    });
+
     this.widget1 = await this.createWidget();
-    this.widget1.position.set(1000, 1000, 1000);
-    this.scene.add(this.widget1);
+    this.widget1.object.position.set(1000, 1000, 1000);
+    this.scene.add(this.widget1.object);
   }
 
   async start() {
@@ -156,7 +179,9 @@ export default class App extends Boilerplate {
     // const geometry = new THREE.PlaneGeometry( 5, 20, 32 );
     // const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     // const plane = new THREE.Mesh( geometry, material );
-    let widget = (new Widget()).object;
+    let widget = (new TagCloudWidget({
+      font: this.mainFont
+    }));
     return widget;
   }
 }
