@@ -8,6 +8,9 @@ module.exports = {
         publicPath: "/assets/",
         filename: 'bundle.js',
     },
+    resolve : {
+      root: [path.join(__dirname, 'src','app')]
+    },
     module: {
       loaders: [{
           test: /\.jsx?$/,

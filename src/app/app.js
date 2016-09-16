@@ -2,7 +2,7 @@ import Boilerplate from './boilerplate.js'
 import THREE from './vreffect.js'
 import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
-import Widget from './widget.js'
+import PRWidget from './widgets/pr.js'
 import Utils from './utils.js'
 import { wait } from './utils.js'
 
@@ -156,7 +156,7 @@ export default class App extends Boilerplate {
     // const geometry = new THREE.PlaneGeometry( 5, 20, 32 );
     // const material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     // const plane = new THREE.Mesh( geometry, material );
-    let widget = (new Widget()).object;
+    let widget = (new PRWidget()).object;
     return widget;
   }
 }
