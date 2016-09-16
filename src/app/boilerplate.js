@@ -1,5 +1,7 @@
 import THREEEffect from './vreffect.js'
 import THREEControls from './vrcontrols.js'
+import OBJLoader from './objloader.js'
+import MTLLoader from './mtlloader.js'
 
 import WebVRManager from 'webvr-boilerplate'
 

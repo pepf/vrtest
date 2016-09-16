@@ -48,7 +48,7 @@ export default class Cube {
   }
 
   addTo( parent ) {
-    
+
   }
 
   /**

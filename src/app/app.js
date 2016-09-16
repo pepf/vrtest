@@ -4,7 +4,11 @@ import Cube from './cube.js'
 import Icosahedron from './icosahedron.js'
 import Utils from './utils.js'
 
+// import roadModel from './models/road.json'
 import roadModel from './models/road.json'
+import coostoLogo from './models/coosto.obj'
+import coostoMaterial from './models/coosto.mtl'
+// import coostoLogo from './models/coosto.json'
 
 export default class App extends Boilerplate {
 
@@ -20,17 +24,18 @@ export default class App extends Boilerplate {
 
     this.objectRefs = {};
 
-    let light = new THREE.PointLight( 0xffffff, 1, 0 );
-    light.position.set( 0, 50, 0 );
-    this.scene.add(light)
+    /**
+     * Lightning setup
+     */
+    let directional = new THREE.DirectionalLight( 0xffffff, 1.2 );
+    directional.position.set(0,1,1).normalize(); //45 degrees;
+    this.scene.add(directional);
 
-    let light2 = new THREE.PointLight( 0xffffff, 1, 0 );
-    light2.position.set( 25, 50, 25 );
-    this.scene.add(light2)
 
-    let light3 = new THREE.PointLight( 0xffffff, 1, 0 );
-    light3.position.set( -25, 50, -25 );
-    this.scene.add(light3)
+    let hemiLight = new THREE.HemisphereLight( 0xd0d5e8, 0xc2b280, 1.2 );
+      hemiLight.position.set( 0, 500, 0 );
+      this.scene.add(hemiLight);
+
 
     let wrapper = new THREE.Object3D();
     wrapper.position.set(0,0,0);
@@ -47,34 +52,6 @@ export default class App extends Boilerplate {
       color: '#422E18',
       shading: THREE.FlatShading
     })
-
-    // this.objectRefs.ico = new Icosahedron({
-    //   size: Utils.random(0.1,0.7),
-    //   position: [0.75, this.controls.userHeight+Utils.random(-1,1), -1],
-    //   speed: new THREE.Vector3(0,0,0.0002),
-    //   rotspeed: new THREE.Vector3(0,0.0006, 0.0003),
-    //   material: material
-    // });
-    //
-    // this.objectRefs.ico2 = new Icosahedron({
-    //   size: Utils.random(0.1,0.7),
-    //   position: [0.4, this.controls.userHeight+Utils.random(-1,1), -2],
-    //   speed: new THREE.Vector3(0,0,0.0002),
-    //   rotspeed: new THREE.Vector3(0,0.0006, 0.0003),
-    //   material: material
-    // });
-    //
-    // this.objectRefs.ico3 = new Icosahedron({
-    //   size: Utils.random(0.1,0.7),
-    //   position: [-0.75, this.controls.userHeight+Utils.random(-1,1), -3],
-    //   speed: new THREE.Vector3(0,0,0.0002),
-    //   rotspeed: new THREE.Vector3(0.005,0, 0.0003),
-    //   material: material
-    // });
-    //
-    // wrapper.add(this.objectRefs.ico.cube);
-    // wrapper.add(this.objectRefs.ico2.cube);
-    // wrapper.add(this.objectRefs.ico3.cube);
 
     this.createRandomIcosahedron(wrapper);
     this.createRandomIcosahedron(wrapper);
@@ -102,6 +79,8 @@ export default class App extends Boilerplate {
     	}
     );
 
+    this.createCoostoLogo();
+
     let gridHelper = new THREE.GridHelper( 10, 10);
     gridHelper.rotation.x = Math.PI;
     wrapper.add( gridHelper );
@@ -114,11 +93,15 @@ export default class App extends Boilerplate {
       if(typeof obj.integrate === "function") {
         obj.integrate(delta);
       }
+      if(key === "coosto") {
+        obj.t+=delta;
+        obj.position.set(0,1.75,-2 + Math.sin(obj.t*0.0001) );
+      }
     }
 
-    this.camera.translateZ(10)
-    // this.camera.updateMatrixWorld()
-    // this.caerma.updateProjectionMatrix()
+    this.scene.position.add(new THREE.Vector3(0,0,0.0003));
+
+
   }
 
   createRandomIcosahedron (container) {
@@ -134,5 +117,37 @@ export default class App extends Boilerplate {
     container.add(ico.cube);
 
 
+  }
+
+  createCoostoLogo () {
+    const mtlLoader = new THREE.MTLLoader()
+
+    let objectRefs = this.objectRefs;
+
+    mtlLoader.load(
+      coostoMaterial,
+      ( materials ) => {
+
+        let objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials( materials );
+        materials.preload();
+
+        // load a resource from a file
+        objLoader.load(
+          // resource URL
+          coostoLogo,
+          // Function when resource is loaded
+          ( object ) => {
+
+            this.scene.add( object );
+            object.t = 0;
+            object.position.set(0,1.75,-2)
+            object.rotation.set(0.5*Math.PI, 0, 0)
+            object.scale.set(0.2,0.2,0.2)
+            objectRefs["coosto"] = object;
+          }
+        );
+      }
+    )
   }
 }
